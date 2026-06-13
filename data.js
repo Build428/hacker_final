@@ -955,7 +955,6 @@ const quizData = {
         "(B) To defend against potential attacks",
         "(C) To clear the SSID",
         "(D) To reset the RADIUS server",
-        "---"
       ]
     }
   ],
