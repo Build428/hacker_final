@@ -495,7 +495,11 @@
 
             // Render Options
             if (currentQuestion.type === 'mcq') {
-                currentQuestion.options.forEach(opt => {
+                // Create a copy of options to shuffle
+                let optionsToRender = [...currentQuestion.options];
+                shuffleArray(optionsToRender);
+
+                optionsToRender.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = 'option-btn';
                     
@@ -503,13 +507,19 @@
                     let letter = "";
                     if(match) {
                         letter = match[1];
-                        btn.innerHTML = `<strong>(${letter})</strong>&nbsp;&nbsp;${match[2]}`;
+                        // Render option text without the original (A)(B) letter since order is randomized now.
+                        // We will hide the original letter to prevent confusion, but still pass it to handleAnswer.
+                        btn.innerHTML = `${match[2]}`;
                     } else {
                         btn.textContent = opt;
                         letter = opt.charAt(1);
                     }
 
+                    // Attach the true original letter so handleAnswer works correctly
                     btn.onclick = () => handleAnswer(btn, letter);
+                    // Also store the letter on the dataset so we can style the correct answer later
+                    btn.dataset.letter = letter;
+                    
                     optionsGrid.appendChild(btn);
                 });
             } else if (currentQuestion.type === 'tf') {
@@ -547,8 +557,8 @@
                 
                 let btnLetter = "";
                 if (currentQuestion.type === 'mcq') {
-                    const match = btn.textContent.match(/^\(([A-D])\)/);
-                    if (match) btnLetter = match[1];
+                    // We stored the original letter in the dataset when rendering
+                    btnLetter = btn.dataset.letter;
                 } else {
                     const match = btn.textContent.match(/^\(([TF])\)/);
                     if (match) btnLetter = match[1];
